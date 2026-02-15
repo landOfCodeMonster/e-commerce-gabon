@@ -68,3 +68,78 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 Admin	admin@icommerce-gabon.com	password
 Client	client@test.com	password
+
+Deploiement iCommerce Gabon sur o2switch
+1. Creer le sous-domaine dans cPanel
+Connecte-toi a ton cPanel o2switch
+Va dans Sous-domaines
+Cree : icommerce-gabon.ml-market.com
+Note le dossier racine cree (par defaut : /home/TONUSER/icommerce-gabon.ml-market.com)
+2. Creer la base de donnees MySQL
+Dans cPanel > Bases de donnees MySQL
+Cree une base : TONUSER_icommerce
+Cree un utilisateur : TONUSER_icuser avec un mot de passe fort
+Associe l'utilisateur a la base avec tous les privileges
+3. Se connecter en SSH et cloner le projet
+
+ssh TONUSER@TONSERVEUR.o2switch.net
+
+# Cloner le repo dans un dossier separe
+cd ~
+git clone https://github.com/TON-USERNAME/icommerce_gabon.git icommerce_gabon
+
+# Supprimer le dossier du sous-domaine et le remplacer par un lien symbolique
+rm -rf ~/icommerce-gabon.ml-market.com
+ln -s ~/icommerce_gabon/public ~/icommerce-gabon.ml-market.com
+4. Installer les dependances
+
+cd ~/icommerce_gabon
+
+# PHP (o2switch a composer pre-installe)
+composer install --no-dev --optimize-autoloader
+
+# Node.js (utiliser la version de o2switch)
+npm ci
+npm run build
+5. Configurer l'environnement
+
+cp .env.example .env
+php artisan key:generate
+nano .env
+Remplis ces valeurs dans le .env :
+
+
+APP_URL=https://icommerce-gabon.ml-market.com
+
+DB_DATABASE=TONUSER_icommerce
+DB_USERNAME=TONUSER_icuser
+DB_PASSWORD=TON_MOT_DE_PASSE
+
+MAIL_HOST=TONSERVEUR.o2switch.net
+MAIL_PORT=465
+MAIL_USERNAME=noreply@ml-market.com
+MAIL_PASSWORD=MOT_DE_PASSE_EMAIL
+MAIL_ENCRYPTION=ssl
+6. Lancer les migrations et le seeder
+
+php artisan migrate --force
+php artisan db:seed --force
+7. Permissions des dossiers
+
+chmod -R 775 storage bootstrap/cache
+8. Cache de production
+
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan storage:link
+9. SSL (HTTPS)
+Dans cPanel > Let's Encrypt SSL ou AutoSSL
+Active le certificat pour icommerce-gabon.ml-market.com
+Il est generalement active automatiquement sur o2switch
+10. Mises a jour futures
+Apres un git push sur GitHub, connecte-toi en SSH et lance :
+
+
+cd ~/icommerce_gabon
+bash deploy.sh
