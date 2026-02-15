@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Payment extends Model
+{
+    protected $fillable = [
+        'order_id',
+        'user_id',
+        'payment_method',
+        'transaction_id',
+        'amount',
+        'currency',
+        'status',
+        'gateway_response',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:2',
+            'gateway_response' => 'array',
+        ];
+    }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+}
