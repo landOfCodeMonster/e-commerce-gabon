@@ -24,9 +24,9 @@ git pull origin main
 echo ">>> Installation des dependances PHP..."
 composer install --no-dev --optimize-autoloader --no-interaction
 
-echo ">>> Installation des dependances Node et build..."
-npm ci
-npm run build
+#echo ">>> Installation des dependances Node et build..."
+#npm ci
+#npm run build
 
 if [ "$INSTALL" = true ]; then
     echo ">>> Premiere installation detectee..."
