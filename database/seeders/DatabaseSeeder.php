@@ -11,20 +11,26 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Admin user
-        User::factory()->create([
-            'name' => 'Admin iCommerce',
-            'email' => 'admin@icommerce-gabon.com',
-            'role' => 'admin',
-            'password' => bcrypt('password'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@icommerce-gabon.com'],
+            [
+                'name' => 'Admin iCommerce',
+                'role' => 'admin',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         // Client test
-        User::factory()->create([
-            'name' => 'Client Test',
-            'email' => 'client@test.com',
-            'role' => 'client',
-            'password' => bcrypt('password'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'client@test.com'],
+            [
+                'name' => 'Client Test',
+                'role' => 'client',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         // Settings
         $settings = [
@@ -38,7 +44,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($settings as $setting) {
-            Setting::create($setting);
+            Setting::firstOrCreate(['key' => $setting['key']], $setting);
         }
     }
 }
